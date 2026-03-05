@@ -1,24 +1,112 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { useEnrollmentStore } from '../store/enrollmentStore';
+import { courses } from '../data/courses';
+import { getLessonsByCourseId } from '../data/lessons';
+import type { Course } from '../types';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuthStore();
+  const { enrollInCourse, isEnrolled, getCourseProgress } = useEnrollmentStore();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  // Get enrolled and available courses
+  const enrolledCourses = courses.filter(course => isEnrolled(course.id));
+  const availableCourses = courses.filter(course => !isEnrolled(course.id));
+
+  const handleEnroll = (courseId: string) => {
+    enrollInCourse(courseId);
+  };
+
+  const handleStartLearning = (courseId: string) => {
+    navigate(`/learn/${courseId}`);
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Beginner': return 'difficulty-beginner';
+      case 'Intermediate': return 'difficulty-intermediate';
+      case 'Advanced': return 'difficulty-advanced';
+      default: return 'difficulty-beginner';
+    }
+  };
+
+  const renderCourseCard = (course: Course, isEnrolledCourse: boolean) => {
+    const lessons = getLessonsByCourseId(course.id);
+    const progress = getCourseProgress(course.id, lessons.length);
+
+    return (
+      <div key={course.id} className="dashboard-course-card">
+        <div className="course-thumbnail">
+          <img src={course.thumbnail} alt={course.title} />
+          <span className={`course-difficulty ${getDifficultyColor(course.difficulty)}`}>
+            {course.difficulty}
+          </span>
+        </div>
+        <div className="course-content">
+          <span className="course-category">{course.category}</span>
+          <h3>{course.title}</h3>
+          <p>{course.description}</p>
+          <div className="course-meta">
+            <span className="meta-item">
+              <span className="meta-icon">👤</span>
+              {course.instructor}
+            </span>
+            <span className="meta-item">
+              <span className="meta-icon">⏱️</span>
+              {course.duration}
+            </span>
+            <span className="meta-item">
+              <span className="meta-icon">📚</span>
+              {course.lessons} lessons
+            </span>
+          </div>
+          
+          {isEnrolledCourse && (
+            <div className="course-progress">
+              <div className="progress-bar-small">
+                <div className="progress-fill-small" style={{ width: `${progress}%` }} />
+              </div>
+              <span className="progress-text">{progress}% complete</span>
+            </div>
+          )}
+
+          {isEnrolledCourse ? (
+            <button 
+              className="btn btn-primary btn-full"
+              onClick={() => handleStartLearning(course.id)}
+            >
+              {progress > 0 ? 'Continue Learning' : 'Start Learning'}
+            </button>
+          ) : (
+            <button 
+              className="btn btn-primary btn-full"
+              onClick={() => handleEnroll(course.id)}
+            >
+              Enroll Now
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const hasEnrollments = enrolledCourses.length > 0;
+
   return (
     <div className="dashboard-container">
+      {/* Header */}
       <nav className="dashboard-nav">
         <div className="nav-brand">
-          <h1>LMS Dashboard</h1>
+          <h1>SkillForge</h1>
         </div>
         <div className="nav-user">
-          <span className="user-name">Welcome, {currentUser?.fullName}!</span>
+          <span className="user-name">Welcome back, {currentUser?.fullName}!</span>
           <button onClick={handleLogout} className="logout-button">
             Logout
           </button>
@@ -26,42 +114,53 @@ export const Dashboard: React.FC = () => {
       </nav>
 
       <main className="dashboard-main">
-        <div className="dashboard-header">
-          <h2>Your Learning Journey</h2>
-          <p>Access your courses, track your progress, and continue learning.</p>
+        {/* Welcome Section */}
+        <div className="dashboard-welcome">
+          <h2>Your Learning Dashboard</h2>
+          <p>Continue your learning journey and track your progress.</p>
         </div>
 
-        <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <div className="card-icon">📚</div>
-            <h3>My Courses</h3>
-            <p>View and continue your enrolled courses</p>
-            <button className="card-button">View Courses</button>
+        {/* Empty State - No Enrollments */}
+        {!hasEnrollments && (
+          <div className="empty-state">
+            <div className="empty-state-icon">📚</div>
+            <h3>You have not enrolled in any course yet.</h3>
+            <p>Start learning by enrolling in one of our courses below.</p>
+            <button 
+              className="btn btn-primary btn-large"
+              onClick={() => document.getElementById('available-courses')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Browse Courses
+            </button>
           </div>
+        )}
 
-          <div className="dashboard-card">
-            <div className="card-icon">📊</div>
-            <h3>Progress</h3>
-            <p>Track your learning progress and achievements</p>
-            <button className="card-button">View Progress</button>
+        {/* My Courses Section */}
+        {hasEnrollments && (
+          <section className="dashboard-section">
+            <div className="section-header">
+              <h3>My Courses</h3>
+              <p>Continue where you left off</p>
+            </div>
+            <div className="courses-grid">
+              {enrolledCourses.map(course => renderCourseCard(course, true))}
+            </div>
+          </section>
+        )}
+
+        {/* Available Courses Section */}
+        <section id="available-courses" className="dashboard-section">
+          <div className="section-header">
+            <h3>Available Courses</h3>
+            <p>Explore new courses to expand your skills</p>
           </div>
-
-          <div className="dashboard-card">
-            <div className="card-icon">📝</div>
-            <h3>Assignments</h3>
-            <p>Check pending assignments and due dates</p>
-            <button className="card-button">View Assignments</button>
+          <div className="courses-grid">
+            {availableCourses.map(course => renderCourseCard(course, false))}
           </div>
+        </section>
 
-          <div className="dashboard-card">
-            <div className="card-icon">🏆</div>
-            <h3>Certificates</h3>
-            <p>View and download your earned certificates</p>
-            <button className="card-button">View Certificates</button>
-          </div>
-        </div>
-
-        <div className="dashboard-info">
+        {/* Account Info */}
+        <section className="dashboard-info-section">
           <h3>Account Information</h3>
           <div className="info-grid">
             <div className="info-item">
@@ -73,6 +172,10 @@ export const Dashboard: React.FC = () => {
               <span className="info-value">{currentUser?.email}</span>
             </div>
             <div className="info-item">
+              <span className="info-label">Enrolled Courses:</span>
+              <span className="info-value">{enrolledCourses.length}</span>
+            </div>
+            <div className="info-item">
               <span className="info-label">Member Since:</span>
               <span className="info-value">
                 {currentUser?.createdAt
@@ -81,7 +184,7 @@ export const Dashboard: React.FC = () => {
               </span>
             </div>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   );

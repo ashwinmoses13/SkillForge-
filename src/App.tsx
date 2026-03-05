@@ -5,9 +5,12 @@ import { LandingPage } from './pages/LandingPage';
 import { Register } from './pages/Register';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
+import { LearningPage } from './pages/LearningPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import './App.css';
 import './LandingPage.css';
+import './Dashboard.css';
+import './LearningPage.css';
 
 function App() {
   const { checkAuth, isAuthenticated } = useAuthStore();
@@ -44,6 +47,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/learn/:courseId"
+          element={
+            <ProtectedRoute>
+              <LearningPage />
             </ProtectedRoute>
           }
         />

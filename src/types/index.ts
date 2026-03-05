@@ -60,4 +60,39 @@ export interface Course {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   thumbnail: string;
   category: string;
+  playlistId: string;
+}
+
+// Lesson Types
+export interface Lesson {
+  id: string;
+  title: string;
+  videoId: string;
+  duration: string;
+  order: number;
+}
+
+export interface CourseLessons {
+  courseId: string;
+  lessons: Lesson[];
+}
+
+// Enrollment Types
+export interface Enrollment {
+  courseId: string;
+  enrolledAt: string;
+  completedLessons: string[];
+  lastAccessedLesson: string | null;
+}
+
+export interface EnrollmentState {
+  enrollments: Enrollment[];
+  enrollInCourse: (courseId: string) => void;
+  unenrollFromCourse: (courseId: string) => void;
+  isEnrolled: (courseId: string) => boolean;
+  markLessonComplete: (courseId: string, lessonId: string) => void;
+  isLessonComplete: (courseId: string, lessonId: string) => boolean;
+  getCourseProgress: (courseId: string, totalLessons: number) => number;
+  getLastAccessedLesson: (courseId: string) => string | null;
+  setLastAccessedLesson: (courseId: string, lessonId: string) => void;
 }
