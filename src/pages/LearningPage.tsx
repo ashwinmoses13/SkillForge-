@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore';
 import { useEnrollmentStore } from '../store/enrollmentStore';
 import { courses } from '../data/courses';
 import { getLessonsByCourseId } from '../data/lessons';
+import { FloatingChatButton } from '../components/chat/FloatingChatButton';
 import type { Lesson } from '../types';
 
 export const LearningPage: React.FC = () => {
@@ -203,6 +204,9 @@ export const LearningPage: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* AI Chatbot */}
+      <FloatingChatButton />
     </div>
   );
 };

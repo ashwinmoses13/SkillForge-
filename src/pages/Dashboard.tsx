@@ -3,6 +3,7 @@ import { useAuthStore } from '../store/authStore';
 import { useEnrollmentStore } from '../store/enrollmentStore';
 import { courses } from '../data/courses';
 import { getLessonsByCourseId } from '../data/lessons';
+import { FloatingChatButton } from '../components/chat/FloatingChatButton';
 import type { Course } from '../types';
 
 export const Dashboard: React.FC = () => {
@@ -186,6 +187,9 @@ export const Dashboard: React.FC = () => {
           </div>
         </section>
       </main>
+
+      {/* AI Chatbot */}
+      <FloatingChatButton />
     </div>
   );
 };

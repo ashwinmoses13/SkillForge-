@@ -11,6 +11,7 @@ import './App.css';
 import './LandingPage.css';
 import './Dashboard.css';
 import './LearningPage.css';
+import './components/chat/ChatStyles.css';
 
 function App() {
   const { checkAuth, isAuthenticated } = useAuthStore();

@@ -96,3 +96,22 @@ export interface EnrollmentState {
   getLastAccessedLesson: (courseId: string) => string | null;
   setLastAccessedLesson: (courseId: string, lessonId: string) => void;
 }
+
+// Chat Types
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+export interface ChatState {
+  messages: ChatMessage[];
+  isOpen: boolean;
+  isLoading: boolean;
+  addMessage: (role: 'user' | 'assistant', content: string) => void;
+  sendMessage: (content: string) => Promise<void>;
+  toggleChat: () => void;
+  closeChat: () => void;
+  clearMessages: () => void;
+}
