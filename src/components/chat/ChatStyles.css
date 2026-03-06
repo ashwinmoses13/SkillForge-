@@ -319,6 +319,33 @@
   background: white;
 }
 
+/* Clear Chat Button */
+.chat-clear-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto 12px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #718096;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chat-clear-button:hover {
+  background: #fed7d7;
+  border-color: #fc8181;
+  color: #c53030;
+}
+
+.chat-clear-button svg {
+  width: 16px;
+  height: 16px;
+}
+
 .chat-input-box {
   max-width: 800px;
   margin: 0 auto;
